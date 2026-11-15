@@ -1,230 +1,196 @@
-const $ = (s, root = document) => root.querySelector(s);
-const $$ = (s, root = document) => [...root.querySelectorAll(s)];
-
-const ICONS = {
-  book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/>',
-  home: '<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
-  library: '<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
-  compass: '<circle cx="12" cy="12" r="10"/><path d="m16 8-3 5-5 3 3-5 5-3Z"/>',
-  pen: '<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>',
-  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
-  star: '<path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01Z"/>',
-  grid: '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
-  list: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3 6h.01M3 12h.01M3 18h.01"/>',
-  x: '<path d="M18 6 6 18M6 6l12 12"/>',
-  chevron: '<path d="m9 18 6-6-6-6"/>',
-  image: '<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
-  upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5M12 3v12"/>',
-  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>',
-  settings: '<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.09a2 2 0 0 1-1-1.74v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2Z"/><circle cx="12" cy="12" r="3"/>',
-  trash: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 15H6L5 6M10 11v6M14 11v6"/>',
-  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
-  bookmark: '<path d="M6 3h12v18l-6-4-6 4Z"/>',
+const root = document.getElementById('app');
+const modalRoot = document.getElementById('modal-root');
+const statuses = ['Reading', 'Plan to Read', 'Completed', 'On Hold', 'Dropped'];
+const paths = {
+  book:'<path d="M12 6v15M3 3l9 3 9-3v15l-9 3-9-3z"/>',
+  reading:'<path d="M12 6v15M3 3l9 3 9-3v15l-9 3-9-3z"/>',
+  library:'<path d="M4 4v16M9 4v16M14 4v16M18 4l4 16"/>',
+  profile:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  search:'<circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/>',
+  close:'<path d="m6 6 12 12M6 18 18 6"/>',
+  image:'<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+  edit:'<path d="m16 3 5 5-12 12-6 1 1-6zM13 6l5 5"/>',
+  star:'<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9z"/>',
+  trash:'<path d="M3 6h18M8 6V3h8v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>',
+  up:'<path d="m6 14 6-6 6 6"/>',down:'<path d="m6 10 6 6 6-6"/>',
+  upload:'<path d="M12 16V3m-5 5 5-5 5 5M3 16v5h18v-5"/>',
+  download:'<path d="M12 3v13m-5-5 5 5 5-5M3 18v3h18v-3"/>'
 };
-const icon = (name, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
-const cover = id => `https://img.anili.st/media/${id}`;
+const icon = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[n] || paths.book}</svg>`;
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => crypto.randomUUID();
+const fresh = () => ({version:3,profile:{username:'My shelf',photo:'',theme:'dark',accent:'lavender',text:'standard',layout:'comfortable'},categories:[],tags:[],manga:[]});
+let db, data, page='reading', query='', statusFilter='All', categoryFilter='All', tagFilter='All', sort='updated', previousFocus, dialogContext, toastTimer;
 
-const seedLibrary = [
-  { id:'solo', anilist:105398, title:'Solo Leveling', format:'Manhwa', year:2018, status:'Reading', chapter:143, total:200, score:9, favorite:true, genres:['Action','Fantasy','Dungeon'], author:'Chugong', description:'In a world where hunters battle deadly monsters, the weakest hunter gains the ability to level up without limits.', review:'Pure momentum. Every arc feels bigger than the last, and the art makes each power-up land.', added:'2026-11-12' },
-  { id:'villainess', anilist:101517, title:'Villains Are Destined to Die', format:'Manhwa', year:2020, status:'Reading', chapter:92, total:160, score:9, favorite:true, genres:['Romance','Fantasy','Villainess'], author:'SUOL', description:'A woman wakes inside a brutal romance game as its most hated villainess, where every choice can end in death.', review:'Penelope is sharp, complicated, and impossible not to root for. The color work is gorgeous.', added:'2026-11-09' },
-  { id:'orv', anilist:119257, title:'Omniscient Reader', format:'Manhwa', year:2020, status:'Reading', chapter:176, total:240, score:10, favorite:true, genres:['Action','Apocalypse','Fantasy'], author:'sing N song', description:'The only reader of an obscure web novel watches its world become reality—and knows exactly how the story ends.', review:'A story about stories, readers, and the terrifying cost of knowing what comes next.', added:'2026-10-29' },
-  { id:'witchhat', anilist:85486, title:'Witch Hat Atelier', format:'Manga', year:2016, status:'Plan to Read', chapter:0, total:84, score:0, favorite:false, genres:['Fantasy','Magic','Adventure'], author:'Kamome Shirahama', description:'A girl who dreams of magic discovers that spells are drawn, not inherited, and enters a breathtaking hidden world.', review:'', added:'2026-10-24' },
-  { id:'blueperiod', anilist:107237, title:'Blue Period', format:'Manga', year:2017, status:'On Hold', chapter:38, total:72, score:8, favorite:false, genres:['Drama','Art','Coming of Age'], author:'Tsubasa Yamaguchi', description:'A restless high-schooler discovers painting and throws himself into the demanding world of fine art.', review:'Honest about the joy, jealousy, and sheer labor behind making art.', added:'2026-09-17' },
-  { id:'spy', anilist:108556, title:'Spy × Family', format:'Manga', year:2019, status:'Reading', chapter:79, total:112, score:8, favorite:false, genres:['Comedy','Action','Family'], author:'Tatsuya Endo', description:'A spy, an assassin, and a telepath create a fake family while keeping their secret lives from one another.', review:'Warm, funny, and effortlessly charming whenever the Forger family is together.', added:'2026-09-02' },
-  { id:'berserk', anilist:30002, title:'Berserk', format:'Manga', year:1989, status:'On Hold', chapter:208, total:376, score:10, favorite:true, genres:['Dark Fantasy','Action','Drama'], author:'Kentaro Miura', description:'A lone swordsman marked by tragedy fights through a merciless medieval world of ambition and monsters.', review:'Unmatched visual storytelling. Devastating, immense, and deeply human beneath all the darkness.', added:'2026-08-11' },
-  { id:'opm', anilist:30013, title:'One-Punch Man', format:'Manga', year:2012, status:'Completed', chapter:204, total:204, score:8, favorite:false, genres:['Action','Comedy','Superhero'], author:'ONE & Yusuke Murata', description:'A hero who defeats every enemy with one punch searches for a challenge—and meaning in his strange profession.', review:'The spectacle is absurdly good, but Saitama’s boredom is still the best joke.', added:'2026-07-30' },
-  { id:'monster', anilist:30001, title:'Monster', format:'Manga', year:1994, status:'Completed', chapter:162, total:162, score:10, favorite:true, genres:['Thriller','Mystery','Psychological'], author:'Naoki Urasawa', description:'A brilliant surgeon saves a young boy, only to learn that his choice may have unleashed a monster.', review:'A patient, morally complex thriller where even the smallest side character feels alive.', added:'2026-06-18' },
-];
-
-const catalog = [
-  {anilist:113415,title:'The Guy She Was Interested in Wasn’t a Guy at All',format:'Manga',year:2022,genres:['Romance','Music'],author:'Sumiko Arai',reason:'Because you rated character-driven drama highly'},
-  {anilist:122663,title:'The Remarried Empress',format:'Manhwa',year:2019,genres:['Romance','Fantasy'],author:'Alphatart',reason:'Matches your Romance and Villainess tags'},
-  {anilist:126287,title:'The Greatest Estate Developer',format:'Manhwa',year:2021,genres:['Comedy','Fantasy'],author:'BK_Moon',reason:'Readers of Omniscient Reader also enjoy this'},
-  {anilist:100388,title:'The Apothecary Diaries',format:'Manga',year:2017,genres:['Mystery','Historical'],author:'Natsu Hyuuga',reason:'A clever lead and layered mystery'},
-  {anilist:104578,title:'Skip and Loafer',format:'Manga',year:2018,genres:['Slice of Life','Romance'],author:'Misaki Takamatsu',reason:'A warm change of pace for your journal'},
-  {anilist:109731,title:'A Stepmother’s Märchen',format:'Manhwa',year:2019,genres:['Drama','Fantasy'],author:'ORKA',reason:'Matches your Fantasy and Drama taste'},
-  {anilist:118586,title:'Dandadan',format:'Manga',year:2021,genres:['Action','Comedy'],author:'Yukinobu Tatsu',reason:'Fast action with eccentric characters'},
-  {anilist:101517,title:'Heaven Official’s Blessing',format:'Manhua',year:2019,genres:['Fantasy','Romance'],author:'STARember',reason:'A lush fantasy with striking artwork'},
-  {anilist:99114,title:'Yona of the Dawn',format:'Manga',year:2009,genres:['Fantasy','Adventure'],author:'Mizuho Kusanagi',reason:'For your character-driven fantasy shelf'},
-  {anilist:98444,title:'My In-Laws Are Obsessed With Me',format:'Manhwa',year:2021,genres:['Romance','Fantasy'],author:'Han Yoon seol',reason:'Matches your slow-burn romance taste'},
-  {anilist:13318,title:'The Summer Hikaru Died',format:'Manga',year:2021,genres:['Horror','Mystery'],author:'Mokumokuren',reason:'A haunting psychological mystery'},
-  {anilist:87395,title:'Made in Abyss',format:'Manga',year:2012,genres:['Adventure','Dark Fantasy'],author:'Akihito Tsukushi',reason:'For your darker fantasy shelf'},
-].map((x,i)=>({...x,id:`catalog-${i}`,chapter:0,total:0,score:0,status:'Plan to Read',favorite:false,description:`Discover ${x.title}, a ${x.format.toLowerCase()} by ${x.author}.`,review:'',added:'2026-11-14'}));
-
-const defaultState = { page:'home', library:seedLibrary, query:'', status:'All', format:'All', view:'grid', galleries:{solo:[{url:'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=800&q=80',caption:'Late-night reading mood'}]}, collections:['Favorites','Comfort reads','Beautiful art'], tags:['slow burn','found family','villainess','great art'] };
-let state;
-try { state = JSON.parse(localStorage.getItem('inklog:v1')) || structuredClone(defaultState); } catch { state = structuredClone(defaultState); }
-state = {...structuredClone(defaultState),...state};
-
-const save = () => localStorage.setItem('inklog:v1', JSON.stringify(state));
-const esc = s => String(s ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-const pct = m => m.total ? Math.min(100, Math.round(m.chapter / m.total * 100)) : Math.min(100, m.chapter ? 70 : 0);
-const toast = message => { const root=$('#toast-root'); root.innerHTML=`<div class="toast">${esc(message)}</div>`; setTimeout(()=>root.innerHTML='',2400); };
-
-function navButton(page,label,ico){ return `<button class="nav-button ${state.page===page?'active':''}" data-page="${page}">${icon(ico)}<span>${label}</span></button>`; }
-function shell(content){
-  return `<div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand"><div class="brand-mark">${icon('book')}</div><div class="brand-name">Ink<span>log</span></div></div>
-      <nav class="nav-list">${navButton('home','Home','home')}${navButton('library','My library','library')}${navButton('explore','Explore','compass')}${navButton('journal','Journal','pen')}</nav>
-      <div class="sidebar-foot"><button class="nav-button" data-settings>${icon('settings')}<span>Settings</span></button><div class="profile-mini"><div class="avatar">M</div><div><strong>My journal</strong><span>Private library</span></div></div></div>
-    </aside>
-    <main class="main"><div class="mobile-top"><div class="brand"><div class="brand-mark">${icon('book')}</div><div class="brand-name">Ink<span>log</span></div></div><button class="button icon ghost" data-settings aria-label="Settings">${icon('settings')}</button></div>${content}</main>
-    <nav class="mobile-nav">${navButton('home','Home','home')}${navButton('library','Library','library')}${navButton('explore','Explore','compass')}${navButton('journal','Journal','pen')}</nav>
-    <button class="fab" data-add aria-label="Add manga">${icon('plus')}</button>
-  </div>`;
+function imageURL(value) {
+  if (!value) return '';
+  if (/^data:image\/(jpeg|png|webp);base64,[a-z\d+/=]+$/i.test(value)) return value;
+  try {const u=new URL(value);return u.protocol==='https:'?u.href:'';}catch{return '';}
 }
+const picture = (url, alt, cls='') => imageURL(url) ? `<img class="${cls}" src="${esc(imageURL(url))}" alt="${esc(alt)}" loading="lazy" referrerpolicy="no-referrer">` : '';
+const placeholder = () => `${icon('book')}<small>No cover yet</small>`;
+const coverHTML = (m, extra='') => `<div class="cover ${extra}">${placeholder()}${picture(m.cover,m.title)}${extra?'':`<span class="status">${esc(m.status)}</span>`}</div>`;
+const percent = m => m.total ? Math.min(100,m.chapter/m.total*100) : 0;
 
-function mangaCard(m, discover=false){
-  const exists=state.library.some(x=>x.anilist===m.anilist);
-  return `<article class="manga-card" data-detail="${m.id}">
-    <div class="cover-wrap"><img src="${cover(m.anilist)}" alt="Cover of ${esc(m.title)}" loading="lazy" onerror="this.src='https://placehold.co/500x750/2d2338/cab0ff?text=${encodeURIComponent(m.title)}'"/>
-      <span class="cover-badge ${discover&&!exists?'pink':''}">${discover?(exists?'In library':m.format):m.status}</span>
-      ${discover&&!exists?`<div class="cover-actions"><button class="quick-add" data-quick-add="${m.id}" aria-label="Add ${esc(m.title)}">${icon('plus')}</button></div>`:''}
-    </div>
-    <h3>${esc(m.title)}</h3>
-    <div class="card-meta"><span>${esc(m.format)} · ${m.year}</span>${m.score?`<span class="rating">${icon('star')}${m.score}</span>`:''}</div>
-    ${discover?`<div class="reason">${esc(m.reason||'Picked for your journal')}</div>`:''}
-  </article>`;
+async function openDB(){
+  db=await new Promise((resolve,reject)=>{const r=indexedDB.open('inklog-journal',1);r.onupgradeneeded=()=>r.result.createObjectStore('journal');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
+  return new Promise((resolve,reject)=>{const t=db.transaction('journal');const r=t.objectStore('journal').get('state');r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
 }
-
-function continueCard(m){ return `<article class="continue-card"><img src="${cover(m.anilist)}" alt="${esc(m.title)}" data-detail="${m.id}"/><div class="continue-info"><h3 data-detail="${m.id}">${esc(m.title)}</h3><span class="meta">Chapter ${m.chapter}${m.total?` of ${m.total}`:''}</span><div class="progress"><span style="width:${pct(m)}%"></span></div><div class="progress-row"><span>${pct(m)}% read</span><span>${m.format}</span></div><button class="chapter-button" data-plus-chapter="${m.id}">+ 1 chapter</button></div></article>`; }
-
-function homePage(){
-  const reading=state.library.filter(x=>x.status==='Reading').slice(0,3);
-  const recent=[...state.library].sort((a,b)=>b.added.localeCompare(a.added)).slice(0,6);
-  return shell(`<div class="page">
-    <div class="page-head"><div><div class="eyebrow">Your private reading space</div><h1>Good evening, reader.</h1><p class="subtext">Pick up where you left off or make a note while it is fresh.</p></div><div class="head-actions"><div class="search">${icon('search')}<input data-global-search placeholder="Search your library" value="${esc(state.query)}"/></div><button class="button primary" data-add>${icon('plus')} Add manga</button></div></div>
-    <section class="hero"><div class="hero-copy"><div class="eyebrow">This week · 16 chapters</div><h1>Your stories, kept <em>beautifully.</em></h1><p>Track every chapter, save the panels you love, and remember what each story made you feel.</p><div class="hero-actions"><button class="button primary" data-page="library">Open my library ${icon('chevron')}</button><button class="button ghost" data-page="journal">Write a review</button></div></div><div class="hero-stack">${recent.slice(0,3).map(m=>`<img src="${cover(m.anilist)}" alt=""/>`).join('')}</div></section>
-    <section class="section"><div class="section-head"><div class="section-title"><h2>Continue reading</h2><p>Your current stories, right where you left them.</p></div><button class="text-button" data-page="library">View library →</button></div><div class="continue-grid">${reading.map(continueCard).join('')}</div></section>
-    <section class="section"><div class="section-head"><div class="section-title"><h2>Recently shelved</h2><p>The newest additions to your journal.</p></div><button class="text-button" data-page="explore">Find something new →</button></div><div class="shelf-grid">${recent.map(m=>mangaCard(m)).join('')}</div></section>
-  </div>`);
+async function persist(next){
+  await new Promise((resolve,reject)=>{const tx=db.transaction('journal','readwrite');tx.objectStore('journal').put(next,'state');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});
+  data=next;applyAppearance();
 }
-
-function libraryPage(){
-  const statuses=['All','Reading','Plan to Read','Completed','On Hold','Dropped'];
-  const formats=['All','Manga','Manhwa','Manhua'];
-  let items=state.library.filter(m=>(state.status==='All'||m.status===state.status)&&(state.format==='All'||m.format===state.format)&&(!state.query||m.title.toLowerCase().includes(state.query.toLowerCase())||m.genres.some(g=>g.toLowerCase().includes(state.query.toLowerCase()))));
-  const content=state.view==='grid'?`<div class="shelf-grid">${items.map(m=>mangaCard(m)).join('')}</div>`:`<div class="library-list">${items.map(m=>`<article class="list-item"><img src="${cover(m.anilist)}" data-detail="${m.id}" alt=""/><div><h3 data-detail="${m.id}">${esc(m.title)}</h3><span class="meta">${m.format} · ${m.year} · ${esc(m.author)}</span></div><div class="list-status"><span class="status-dot">${m.status}</span></div><div class="list-progress"><div class="progress"><span style="width:${pct(m)}%"></span></div><span class="meta">Ch. ${m.chapter}${m.total?` / ${m.total}`:''}</span></div><div class="list-extra rating">${m.score?`${icon('star')} ${m.score}/10`:'Unrated'}</div><button class="button icon soft" data-detail="${m.id}">${icon('chevron')}</button></article>`).join('')}</div>`;
-  return shell(`<div class="page"><div class="page-head"><div><div class="eyebrow">${state.library.length} stories</div><h1>My library</h1><p class="subtext">Every world you have visited, in one place.</p></div><div class="head-actions"><div class="search">${icon('search')}<input data-library-search placeholder="Search title, tag or genre" value="${esc(state.query)}"/></div><button class="button primary" data-add>${icon('plus')} Add</button></div></div>
-    <div class="toolbar"><div class="tabs">${statuses.map(s=>`<button class="tab ${state.status===s?'active':''}" data-status="${s}">${s}${s==='All'?` · ${state.library.length}`:''}</button>`).join('')}</div><div class="view-toggle"><button class="${state.view==='grid'?'active':''}" data-view="grid" aria-label="Grid view">${icon('grid')}</button><button class="${state.view==='list'?'active':''}" data-view="list" aria-label="List view">${icon('list')}</button></div></div>
-    <div class="filter-row">${formats.map(f=>`<button class="filter-chip ${state.format===f?'active':''}" data-format="${f}">${f}</button>`).join('')}${state.tags.map(t=>`<button class="filter-chip" data-query="${esc(t)}"># ${esc(t)}</button>`).join('')}</div>
-    ${items.length?content:`<div class="empty">${icon('book')}<h3>No stories found</h3><p>Try another search or shelf.</p></div>`}
-  </div>`);
+let pendingWrite=Promise.resolve();
+function change(fn){const run=pendingWrite.then(async()=>{const next=structuredClone(data);fn(next);await persist(next);});pendingWrite=run.catch(()=>{});return run;}
+function migrate(old){
+  const next=fresh();
+  next.categories=Array.isArray(old.collections)?old.collections.filter(x=>typeof x==='string'):[];
+  next.tags=Array.isArray(old.tags)?old.tags.filter(x=>typeof x==='string'):[];
+  next.manga=(old.library||[]).map(m=>({id:String(m.id),title:String(m.title||'Untitled'),cover:imageURL(m.cover||`https://img.anili.st/media/${Number(m.anilist)}`),status:statuses.includes(m.status)?m.status:'Plan to Read',chapter:Math.max(0,Number(m.chapter)||0),total:Math.max(0,Number(m.total)||0),rating:Math.round((Number(m.score)||0)/2),review:String(m.review||''),categories:m.favorite?['Favorites']:[],tags:Array.isArray(m.genres)?m.genres:[],gallery:(old.galleries?.[m.id]||[]).map(x=>({id:uid(),url:imageURL(x.url),caption:String(x.caption||'')})).filter(x=>x.url),updated:Date.now(),created:Date.now()}));
+  next.legacy=true;return next;
 }
-
-function explorePage(){
-  const available=catalog.filter(x=>!state.library.some(y=>y.anilist===x.anilist));
-  return shell(`<div class="page"><div class="page-head"><div><div class="eyebrow">Made for your taste</div><h1>Explore</h1><p class="subtext">Find your next obsession across manga, manhwa, and manhua.</p></div><div class="head-actions"><div class="search">${icon('search')}<input data-catalog-search placeholder="Search recommendations" value="${esc(state.query)}"/></div></div></div>
-    <div class="discover-banner"><div><h2>A shelf picked for you</h2><p>Fantasy, strong character arcs, beautiful art, and a little emotional damage.</p></div><button class="button soft" data-refresh>${icon('compass')} Refresh picks</button></div>
-    <section><div class="section-head"><div class="section-title"><h2>Because you loved your favorites</h2><p>${available.length} titles outside your library</p></div></div><div class="shelf-grid">${available.filter(m=>!state.query||m.title.toLowerCase().includes(state.query.toLowerCase())||m.genres.some(g=>g.toLowerCase().includes(state.query.toLowerCase()))).map(m=>mangaCard(m,true)).join('')}</div></section>
-  </div>`);
+function applyAppearance(){
+  const p=data.profile;document.body.dataset.theme=p.theme;document.body.dataset.text=p.text;document.body.classList.toggle('compact',p.layout==='compact');
+  document.documentElement.style.fontSize=p.text==='large'?'21px':'18px';
+  const colors=p.theme==='light'?{lavender:['#713b92','#fff'],rose:['#972f69','#fff'],sage:['#34674d','#fff']}:{lavender:['#e1c7ff','#2d123c'],rose:['#ffc2e0','#43142e'],sage:['#b9e5c8','#123820']};
+  const c=colors[p.accent]||colors.lavender;document.documentElement.style.setProperty('--accent',c[0]);document.documentElement.style.setProperty('--accent-ink',c[1]);
+  document.querySelector('meta[name="theme-color"]').content=p.theme==='dark'?'#121019':'#f6f2f9';
 }
+function toast(msg){clearTimeout(toastTimer);document.getElementById('toast-root').innerHTML=`<div class="toast" role="status">${esc(msg)}</div>`;toastTimer=setTimeout(()=>document.getElementById('toast-root').innerHTML='',2800);}
+function fail(e){console.error(e);const error=modalRoot.querySelector('[data-error]');const message=e?.name==='QuotaExceededError'?'Storage is full. Remove a few gallery images or export a backup.':e?.message||'Could not save. Please try again.';if(error){error.textContent=message;error.focus();}else toast(message);}
 
-function journalPage(){
-  const reviewed=state.library.filter(x=>x.review).sort((a,b)=>b.added.localeCompare(a.added));
-  const chapters=state.library.reduce((n,m)=>n+m.chapter,0);
-  return shell(`<div class="page"><div class="page-head"><div><div class="eyebrow">Thoughts worth keeping</div><h1>Reading journal</h1><p class="subtext">A record of the stories that stayed with you.</p></div><div class="head-actions"><button class="button primary" data-review>${icon('pen')} New entry</button></div></div>
-    <div class="stats-grid"><div class="stat"><div class="stat-icon">${icon('book')}</div><strong>${state.library.length}</strong><span>titles shelved</span></div><div class="stat"><div class="stat-icon">${icon('clock')}</div><strong>${chapters.toLocaleString()}</strong><span>chapters tracked</span></div><div class="stat"><div class="stat-icon">${icon('pen')}</div><strong>${reviewed.length}</strong><span>journal entries</span></div><div class="stat"><div class="stat-icon">${icon('star')}</div><strong>${(state.library.filter(x=>x.score).reduce((n,m)=>n+m.score,0)/state.library.filter(x=>x.score).length||0).toFixed(1)}</strong><span>average score</span></div></div>
-    <div class="section-head"><div class="section-title"><h2>Recent reflections</h2><p>Private by default, always yours.</p></div></div><div class="journal-grid">${reviewed.map(m=>`<article class="review-card"><img src="${cover(m.anilist)}" data-detail="${m.id}" alt=""/><div><h3>${esc(m.title)}</h3><div class="review-stars">${'★'.repeat(Math.ceil(m.score/2))}${'☆'.repeat(5-Math.ceil(m.score/2))} · ${m.score}/10</div><p>${esc(m.review)}</p><div class="review-footer"><span>${m.added}</span><button class="text-button" data-edit-review="${m.id}">Edit</button></div></div></article>`).join('')}</div>
-  </div>`);
-}
-
+function nav(name,label){return `<button data-page="${name}" class="${page===name?'active':''}" ${page===name?'aria-current="page"':''}>${icon(name)}${label}</button>`;}
 function render(){
-  const app=$('#app');
-  app.innerHTML=state.page==='home'?homePage():state.page==='library'?libraryPage():state.page==='explore'?explorePage():journalPage();
-  bind();
-  window.scrollTo({top:0,behavior:'smooth'});
+  applyAppearance();const p=data.profile;
+  root.innerHTML=`<div class="app"><header class="header"><div class="logo"><div class="logo-mark">${icon('book')}</div>Ink<span>log</span></div><nav class="nav" aria-label="Main navigation">${nav('reading','Reading')}${nav('library','Library')}${nav('profile','Profile')}</nav><button class="profile-dot" data-page="profile" aria-label="Open profile">${p.photo?picture(p.photo,'Profile picture'):esc(p.username.slice(0,1).toUpperCase())}</button></header><main id="main" class="page">${page==='reading'?readingPage():page==='library'?libraryPage():profilePage()}</main></div>`;
+}
+function card(m,reading=false){
+  if(reading===true)return `<article class="manga-card reading-card"><button class="reading-cover" data-open="${m.id}" aria-label="Open ${esc(m.title)}">${coverHTML(m)}</button><div class="reading-info"><button class="reading-title" data-open="${m.id}"><h3>${esc(m.title)}</h3></button><div class="card-rating">${m.rating?'★ '+m.rating+' / 5':'Unrated'}</div><div class="chapter-row"><div><span class="muted small">Chapter</span><br><strong>${m.chapter}${m.total?' / '+m.total:''}</strong></div><button class="chapter-add" data-plus="${m.id}" aria-label="Add one chapter to ${esc(m.title)}">+1</button></div><button class="text-btn small" data-open="${m.id}">Update status</button></div></article>`;
+  return `<article class="manga-card"><button class="card-open" data-open="${m.id}" aria-label="Open ${esc(m.title)}">${coverHTML(m)}<div class="card-body"><h3>${esc(m.title)}</h3><div class="card-rating">${m.rating?'★ '+m.rating+' / 5':'Unrated'}</div></div></button><div class="card-bottom"><div class="chapter-row"><div><span class="muted small">Chapter</span><br><strong>${m.chapter}${m.total?' / '+m.total:''}</strong></div><button class="chapter-add" data-plus="${m.id}" aria-label="Add one chapter to ${esc(m.title)}">+1</button></div>${m.total?`<div class="progress" role="progressbar" aria-label="Reading progress" aria-valuenow="${Math.min(100,Math.round(percent(m)))}" aria-valuemin="0" aria-valuemax="100"><i style="width:${percent(m)}%"></i></div>`:''}</div></article>`;
+}
+function empty(title,text,button=true){return `<div class="empty"><div class="empty-icon">${icon('book')}</div><h2>${title}</h2><p>${text}</p>${button?`<button class="btn primary" data-new>${icon('plus')}Add manga</button>`:''}</div>`;}
+function readingPage(){
+  const current=data.manga.filter(m=>m.status==='Reading').sort((a,b)=>b.updated-a.updated);
+  const planned=data.manga.filter(m=>m.status==='Plan to Read').sort((a,b)=>b.updated-a.updated).slice(0,4);
+  return `<div class="page-title"><div><h1>Currently reading</h1><p>${current.length?current.length+' '+(current.length===1?'story':'stories')+' in progress':'Your next chapter starts here.'}</p></div><button class="btn primary" data-new>${icon('plus')}Add manga</button></div>${data.legacy?`<div class="notice row between"><span>Your previous library is here.</span><button class="text-btn" data-dismiss-legacy>Got it</button></div>`:''}${current.length?`<div class="grid reading-grid">${current.map(m=>card(m,true)).join('')}</div>`:empty('A shelf of your own','Add a manga and choose Reading to see it here.')}${planned.length?`<div class="section-title"><h2>Read next</h2><button class="text-btn" data-show-planned>View all</button></div><div class="grid">${planned.map(card).join('')}</div>`:''}`;
+}
+function libraryPage(){return `<div class="page-title"><div><h1>Your library</h1><p>${data.manga.length} ${data.manga.length===1?'manga':'manga'} on your shelves</p></div><button class="btn primary" data-new>${icon('plus')}Add manga</button></div><div class="toolbar"><label class="search">${icon('search')}<input class="input" type="search" id="search" placeholder="Search titles or tags" aria-label="Search titles or tags" value="${esc(query)}"></label><select class="input" id="category-filter" aria-label="Filter by category"><option value="All">All categories</option>${data.categories.map(c=>`<option ${c===categoryFilter?'selected':''}>${esc(c)}</option>`).join('')}</select><select class="input" id="sort" aria-label="Sort manga">${[['updated','Recently updated'],['title','Title A–Z'],['rating','Highest rated']].map(([v,l])=>`<option value="${v}" ${sort===v?'selected':''}>${l}</option>`).join('')}</select></div><div class="chips" aria-label="Reading status">${['All',...statuses].map(s=>`<button class="chip ${s===statusFilter?'active':''}" data-status-filter="${s}" aria-pressed="${s===statusFilter}">${s}</button>`).join('')}</div>${data.tags.length?`<div class="toolbar"><label class="small" for="tag-filter">Tag</label><select class="input" id="tag-filter"><option value="All">All tags</option>${data.tags.map(t=>`<option ${t===tagFilter?'selected':''}>${esc(t)}</option>`).join('')}</select></div>`:''}<div id="library-results" aria-live="polite">${libraryResults()}</div>`;}
+function libraryResults(){
+  let list=data.manga.filter(m=>(statusFilter==='All'||m.status===statusFilter)&&(categoryFilter==='All'||m.categories.includes(categoryFilter))&&(tagFilter==='All'||m.tags.includes(tagFilter))&&(!query||[m.title,...m.tags].some(t=>t.toLowerCase().includes(query.toLowerCase()))));
+  list.sort(sort==='title'?(a,b)=>a.title.localeCompare(b.title):sort==='rating'?(a,b)=>b.rating-a.rating:(a,b)=>b.updated-a.updated);
+  return list.length?`<div class="grid">${list.map(card).join('')}</div>`:empty(data.manga.length?'No matches':'Your library is empty',data.manga.length?'Try a different search or filter.':'Add your first manga, just the way you like it.',!data.manga.length);
+}
+function profilePage(){const p=data.profile;return `<div class="page-title"><div><h1>Your profile</h1></div></div><div class="profile-layout"><aside class="profile-card"><div class="profile-avatar">${p.photo?picture(p.photo,'Your profile picture'):esc(p.username.slice(0,1).toUpperCase())}</div><h2>${esc(p.username)}</h2><p class="muted small" style="margin-top:8px">${data.manga.length} manga · ${data.manga.filter(m=>m.status==='Completed').length} completed</p><label class="btn file-label">${icon('image')}Change photo<input class="file-input" type="file" id="profile-photo" accept="image/jpeg,image/png,image/webp"></label>${p.photo?'<button class="text-btn" data-remove-photo>Remove photo</button>':''}</aside><div class="settings-stack"><section class="settings-card"><h2>Make it yours</h2><form id="profile-form"><div class="field"><label for="username">Username</label><input class="input" id="username" name="username" maxlength="40" required value="${esc(p.username)}"></div><button class="btn primary" style="margin-top:14px">Save name</button></form><div class="setting-row"><label for="theme">Appearance</label><select class="input" id="theme"><option value="dark" ${p.theme==='dark'?'selected':''}>Dark</option><option value="light" ${p.theme==='light'?'selected':''}>Light</option></select></div><div class="setting-row"><span>Accent colour</span><div class="colour-options">${[['lavender','#d8b4f8'],['rose','#ffbadc'],['sage','#b9e5c8']].map(([name,c])=>`<button class="colour-option ${p.accent===name?'active':''}" data-accent="${name}" aria-label="${name}" aria-pressed="${p.accent===name}" style="--swatch:${c}"><span></span></button>`).join('')}</div></div><div class="setting-row"><label for="text-size">Text size</label><select class="input" id="text-size"><option value="standard" ${p.text==='standard'?'selected':''}>Comfortable</option><option value="large" ${p.text==='large'?'selected':''}>Extra large</option></select></div><div class="setting-row"><label for="layout">Cover layout</label><select class="input" id="layout"><option value="comfortable" ${p.layout==='comfortable'?'selected':''}>Roomy</option><option value="compact" ${p.layout==='compact'?'selected':''}>Compact</option></select></div></section>${manager('categories','Categories')}${manager('tags','Tags')}<section class="settings-card"><h2>Backup</h2><div class="row"><button class="btn" data-export>${icon('download')}Export</button><label class="btn file-label">${icon('upload')}Restore<input type="file" accept="application/json" class="file-input" id="import"></label></div><p class="help">Saved on this device. Backups include covers and galleries.</p></section></div></div>`;}
+function manager(type,title){return `<section class="settings-card"><h2>${title}</h2><form data-manager="${type}" class="add-inline"><input class="input" name="name" maxlength="50" required placeholder="New ${type==='categories'?'category':'tag'}" aria-label="New ${type==='categories'?'category':'tag'}"><button class="btn" aria-label="Add ${title.toLowerCase()}">${icon('plus')}</button></form><div class="settings-list">${data[type].map((n,i)=>`<div class="settings-item"><span>${esc(n)}</span><div class="row"><button class="btn icon" data-rename="${type}:${i}" aria-label="Rename ${esc(n)}">${icon('edit')}</button><button class="btn icon danger" data-delete-group="${type}:${i}" aria-label="Delete ${esc(n)}">${icon('trash')}</button></div></div>`).join('')}</div></section>`;}
+
+function showDialog(title,html,context){
+  if(!modalRoot.firstChild)previousFocus=document.activeElement;
+  dialogContext=context;modalRoot.innerHTML=`<div class="dialog-backdrop"><section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title"><div class="dialog-head"><h2 id="dialog-title">${esc(title)}</h2><button class="btn icon" data-close aria-label="Close">${icon('close')}</button></div><div class="dialog-body">${html}<div data-error role="alert" class="error" tabindex="-1"></div></div></section></div>`;
+  document.body.classList.add('modal-open');requestAnimationFrame(()=>modalRoot.querySelector('button,input')?.focus());
+}
+function closeDialog(){modalRoot.innerHTML='';document.body.classList.remove('modal-open');dialogContext=null;if(previousFocus?.isConnected)previousFocus.focus();}
+function mangaById(id){return data.manga.find(m=>m.id===id);}
+function detail(id,tab='overview'){
+  const m=mangaById(id);if(!m)return;
+  showDialog(m.title,`<div class="detail-top">${coverHTML(m,'detail-cover')}<div class="detail-title"><h2>${esc(m.title)}</h2><p class="muted" style="margin-bottom:12px">${m.rating?'★ '+m.rating+' / 5':'Not rated'}</p><button class="btn" data-edit="${m.id}">${icon('edit')}Edit manga</button></div></div><div class="detail-progress"><div class="row between"><label class="field" style="min-width:150px;flex:1"><span>Status</span><select class="input" data-detail-status="${m.id}">${statuses.map(s=>`<option ${s===m.status?'selected':''}>${s}</option>`).join('')}</select></label><div class="field"><label for="detail-chapter">Chapter${m.total?' / '+m.total:''}</label><div class="stepper"><input class="input" id="detail-chapter" type="number" min="0" step="0.1" value="${m.chapter}" data-detail-chapter="${m.id}"><button class="btn primary" data-plus="${m.id}" aria-label="Add one chapter">+1</button></div></div></div></div><div class="detail-tabs" role="tablist" aria-label="Manga details"><button role="tab" aria-selected="${tab==='overview'}" aria-controls="detail-panel" class="${tab==='overview'?'active':''}" data-detail-tab="overview">Details</button><button role="tab" aria-selected="${tab==='gallery'}" aria-controls="detail-panel" class="${tab==='gallery'?'active':''}" data-detail-tab="gallery">Gallery (${m.gallery.length})</button></div><div id="detail-panel" role="tabpanel">${tab==='gallery'?galleryPanel(m):overviewPanel(m)}</div>`,{type:'detail',id,tab});
+}
+function overviewPanel(m){return `<div class="detail-section"><h3>Categories</h3>${m.categories.length?`<div class="tags">${m.categories.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`:'<p class="muted">No categories yet.</p>'}</div><div class="detail-section"><h3>Tags</h3>${m.tags.length?`<div class="tags">${m.tags.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div>`:'<p class="muted">No tags yet.</p>'}</div><div class="detail-section"><h3>Your review</h3><p class="${m.review?'':'muted'}">${esc(m.review||'What did you think of this one?')}</p><button class="text-btn" data-edit="${m.id}">${m.review?'Edit review':'Write a review'}</button></div>`;}
+function galleryPanel(m){return `<div class="detail-section"><div class="row between"><h3>Your saved images</h3><label class="btn primary file-label">${icon('plus')}Add images<input type="file" multiple accept="image/jpeg,image/png,image/webp" class="file-input" data-gallery-upload="${m.id}"></label></div><form data-gallery-link="${m.id}" class="add-inline" style="margin-top:16px"><input class="input" name="url" type="url" required placeholder="Or paste an HTTPS image link" aria-label="Image link"><button class="btn">Add</button></form>${m.gallery.length?`<div class="gallery">${m.gallery.map((g,i)=>`<figure><button class="gallery-open" data-view-image="${g.id}" aria-label="View ${esc(g.caption||'saved image')}">${picture(g.url,g.caption||'Saved image')}</button><figcaption>${esc(g.caption||'Untitled image')}</figcaption><div class="gallery-tools"><button data-caption="${g.id}" aria-label="Edit caption">${icon('edit')}</button><button data-move="${g.id}:-1" ${i===0?'disabled':''} aria-label="Move image earlier">${icon('up')}</button><button data-move="${g.id}:1" ${i===m.gallery.length-1?'disabled':''} aria-label="Move image later">${icon('down')}</button><button data-remove-image="${g.id}" aria-label="Delete image">${icon('trash')}</button></div></figure>`).join('')}</div>`:'<p class="muted" style="margin-top:25px">Panels, favourite scenes, cover art. Keep them here.</p>'}</div>`;}
+
+let draft;
+function editor(id){
+  const m=mangaById(id);draft=m?structuredClone(m):{id:uid(),title:'',cover:'',rating:0,review:'',status:'Reading',chapter:0,total:0,categories:[],tags:[],gallery:[],created:Date.now(),updated:Date.now()};
+  showDialog(m?'Edit manga':'Add manga',`<form id="manga-form"><div class="form-grid"><div class="field full"><label for="m-title">Title <span class="muted">(required)</span></label><input id="m-title" class="input" name="title" maxlength="200" required value="${esc(draft.title)}" placeholder="Manga title"></div><div class="field full"><span>Cover</span><div class="upload-layout"><div class="cover-preview" id="cover-preview">${draft.cover?picture(draft.cover,'Cover preview'):icon('image')}</div><div class="upload-buttons"><label class="btn file-label">${icon('upload')}Upload cover<input class="file-input" id="cover-upload" type="file" accept="image/jpeg,image/png,image/webp"></label><button class="text-btn" type="button" data-remove-cover>Remove cover</button></div></div><input name="coverURL" class="input" type="url" placeholder="Or paste a cover image link" aria-label="Cover image link" value="${draft.cover?.startsWith('https:')?esc(draft.cover):''}"></div><div class="field"><label for="m-status">Status</label><select id="m-status" class="input" name="status">${statuses.map(s=>`<option ${draft.status===s?'selected':''}>${s}</option>`).join('')}</select></div><div class="field"><label for="m-chapter">Current chapter</label><input id="m-chapter" class="input" name="chapter" type="number" min="0" step="0.1" value="${draft.chapter}"></div><div class="field"><label for="m-total">Total chapters <span class="muted small">(optional)</span></label><input id="m-total" class="input" name="total" type="number" min="0" step="0.1" value="${draft.total||''}" placeholder="Unknown"></div><div class="field"><span id="rating-label">Your rating</span><div class="rating-group" role="group" aria-labelledby="rating-label">${[1,2,3,4,5].map(n=>`<button type="button" class="rating-star ${draft.rating>=n?'on':''}" data-rate="${n}" aria-label="${n} out of 5" aria-pressed="${draft.rating===n}">${icon('star')}</button>`).join('')}<button type="button" class="text-btn small" data-clear-rating>Clear</button></div></div><div class="field full"><span>Categories</span><div class="selection-box" id="category-choices">${categoryChoices()}</div><div class="add-inline"><input class="input" id="new-category" maxlength="50" placeholder="New category" aria-label="New category"><button class="btn" type="button" data-draft-category>${icon('plus')}Add</button></div></div><div class="field full"><label for="m-tags">Tags</label><input class="input" id="m-tags" name="tags" value="${esc(draft.tags.join(', '))}" placeholder="Romance, beautiful art, slow burn"><small>Separate tags with commas.</small></div><div class="field full"><label for="m-review">Your review</label><textarea class="input" id="m-review" name="review" maxlength="20000" placeholder="Your thoughts on this manga…">${esc(draft.review)}</textarea></div><div class="field full"><span>Image gallery</span><p class="help">Save the manga, then open its Gallery to add images.</p></div></div><div class="form-actions">${m?`<button type="button" class="btn danger" data-delete-manga="${m.id}">${icon('trash')}Delete</button>`:''}<button type="button" class="btn" data-close>Cancel</button><button class="btn primary" type="submit">Save manga</button></div></form>`,{type:'editor',id:draft.id});
+}
+function categoryChoices(){const choices=[...new Set([...data.categories,...draft.categories])];return choices.length?choices.map(c=>`<label class="check-chip"><input type="checkbox" name="categories" value="${esc(c)}" ${draft.categories.includes(c)?'checked':''}>${esc(c)}</label>`).join(''):'<span class="muted small">Add your first category below.</span>';}
+function updateStars(){modalRoot.querySelectorAll('[data-rate]').forEach(b=>{b.classList.toggle('on',Number(b.dataset.rate)<=draft.rating);b.setAttribute('aria-pressed',String(Number(b.dataset.rate)===draft.rating));});}
+async function saveManga(form){
+  const f=new FormData(form),title=String(f.get('title')).trim();if(!title)throw Error('Enter a title.');
+  const coverInput=String(f.get('coverURL')).trim();if(coverInput&&!imageURL(coverInput))throw Error('Use an HTTPS image link for the cover.');
+  const m={...draft,title,status:String(f.get('status')),chapter:Math.max(0,Number(f.get('chapter'))||0),total:Math.max(0,Number(f.get('total'))||0),cover:coverInput||draft.cover,categories:f.getAll('categories').map(String),tags:[...new Set(String(f.get('tags')).split(',').map(s=>s.trim()).filter(Boolean))],review:String(f.get('review')).trim(),updated:Date.now()};
+  await change(next=>{const i=next.manga.findIndex(x=>x.id===m.id);if(i>=0)next.manga[i]=m;else next.manga.unshift(m);next.categories=[...new Set([...next.categories,...m.categories])];next.tags=[...new Set([...next.tags,...m.tags])];});
+  render();detail(m.id);toast('Manga saved');
 }
 
-function bind(){
-  $$('[data-page]').forEach(el=>el.onclick=()=>{state.page=el.dataset.page;state.query='';save();render();});
-  $$('[data-add]').forEach(el=>el.onclick=openAdd);
-  $$('[data-settings]').forEach(el=>el.onclick=openSettings);
-  $$('[data-detail]').forEach(el=>el.onclick=e=>{if(e.target.closest('[data-quick-add]'))return;openDetail(el.dataset.detail);});
-  $$('[data-plus-chapter]').forEach(el=>el.onclick=()=>increment(el.dataset.plusChapter));
-  $$('[data-quick-add]').forEach(el=>el.onclick=e=>{e.stopPropagation();addCatalog(el.dataset.quickAdd);});
-  $$('[data-status]').forEach(el=>el.onclick=()=>{state.status=el.dataset.status;save();render();});
-  $$('[data-format]').forEach(el=>el.onclick=()=>{state.format=el.dataset.format;save();render();});
-  $$('[data-view]').forEach(el=>el.onclick=()=>{state.view=el.dataset.view;save();render();});
-  $$('[data-query]').forEach(el=>el.onclick=()=>{state.query=el.dataset.query;render();});
-  const lib=$('[data-library-search]'); if(lib)lib.oninput=()=>{state.query=lib.value;renderDebounced();};
-  const cat=$('[data-catalog-search]'); if(cat)cat.oninput=()=>{state.query=cat.value;renderDebounced();};
-  const global=$('[data-global-search]'); if(global)global.onkeydown=e=>{if(e.key==='Enter'){state.query=global.value;state.page='library';save();render();}};
-  $$('[data-edit-review]').forEach(el=>el.onclick=()=>openReview(el.dataset.editReview));
-  const review=$('[data-review]'); if(review)review.onclick=()=>openReview(state.library[0]?.id);
-  const refresh=$('[data-refresh]'); if(refresh)refresh.onclick=()=>{catalog.sort(()=>Math.random()-.5);toast('Fresh picks added to your shelf');render();};
+async function readImage(file,size=1600){
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('Choose a JPG, PNG, or WebP image.');
+  if(file.size>10*1024*1024)throw Error('Choose an image under 10 MB.');
+  const bitmap=await createImageBitmap(file);const ratio=Math.min(1,size/Math.max(bitmap.width,bitmap.height));const canvas=document.createElement('canvas');canvas.width=Math.round(bitmap.width*ratio);canvas.height=Math.round(bitmap.height*ratio);const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();return canvas.toDataURL('image/jpeg',.86);
 }
-let renderTimer; function renderDebounced(){clearTimeout(renderTimer);renderTimer=setTimeout(render,180);}
+async function plus(id){const m=mangaById(id);if(!m)return;await change(next=>{const a=next.manga.find(x=>x.id===id);a.chapter=Math.round((a.chapter+1)*10)/10;a.updated=Date.now();});const context=dialogContext;render();if(context?.type==='detail')detail(id,context.tab);toast('Chapter updated');}
+function confirmDialog(title,text,onConfirm){showDialog(title,`<p style="line-height:1.7">${esc(text)}</p><div class="form-actions"><button class="btn" data-close>Cancel</button><button class="btn primary" data-confirm>Confirm</button></div>`,{type:'confirm',onConfirm});}
+function textDialog(title,value,onSave){showDialog(title,`<form id="text-form"><label class="field"><span>${esc(title)}</span><input name="text" class="input" required maxlength="200" value="${esc(value)}"></label><div class="form-actions"><button class="btn" type="button" data-close>Cancel</button><button class="btn primary">Save</button></div></form>`,{type:'text',onSave});}
 
-function increment(id, amount=1){ const m=state.library.find(x=>x.id===id);if(!m)return;m.chapter=Math.max(0,m.chapter+amount);if(m.total&&m.chapter>=m.total){m.chapter=m.total;m.status='Completed';}else if(m.status==='Plan to Read')m.status='Reading';save();toast(`Chapter ${m.chapter} saved`);render(); }
-function addCatalog(id){ const m=catalog.find(x=>x.id===id);if(!m)return;if(state.library.some(x=>x.anilist===m.anilist)){toast('Already in your library');return;}state.library.unshift({...m,id:`title-${Date.now()}`,added:new Date().toISOString().slice(0,10)});save();toast(`${m.title} added to Plan to Read`);render(); }
-function closeModal(){ $('#modal-root').innerHTML=''; }
-function modal(html,wide=false){ $('#modal-root').innerHTML=`<div class="modal-backdrop"><section class="modal ${wide?'wide':''}" role="dialog" aria-modal="true">${html}</section></div>`;$('.modal-backdrop').onclick=e=>{if(e.target===e.currentTarget)closeModal();};$$('[data-close]').forEach(x=>x.onclick=closeModal);document.onkeydown=e=>{if(e.key==='Escape')closeModal();}; }
+root.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;try{
+  if(b.dataset.page){page=b.dataset.page;render();window.scrollTo(0,0);}
+  else if(b.hasAttribute('data-new'))editor();
+  else if(b.dataset.open)detail(b.dataset.open);
+  else if(b.dataset.plus)await plus(b.dataset.plus);
+  else if(b.dataset.statusFilter){statusFilter=b.dataset.statusFilter;render();}
+  else if(b.hasAttribute('data-show-planned')){page='library';statusFilter='Plan to Read';render();window.scrollTo(0,0);}
+  else if(b.hasAttribute('data-dismiss-legacy')){await change(n=>delete n.legacy);render();}
+  else if(b.dataset.accent){await change(n=>n.profile.accent=b.dataset.accent);render();}
+  else if(b.hasAttribute('data-remove-photo')){await change(n=>n.profile.photo='');render();}
+  else if(b.dataset.rename){const[type,index]=b.dataset.rename.split(':');const old=data[type][index];textDialog('Rename '+(type==='categories'?'category':'tag'),old,async value=>{if(!value.trim())throw Error('Enter a name.');if(value!==old&&data[type].includes(value))throw Error('That name already exists.');await change(n=>{n[type][index]=value;n.manga.forEach(m=>m[type]=m[type].map(v=>v===old?value:v));});closeDialog();render();toast('Renamed');});}
+  else if(b.dataset.deleteGroup){const[type,index]=b.dataset.deleteGroup.split(':');const old=data[type][index];confirmDialog('Remove '+old+'?', 'Your manga will stay in your library.',async()=>{await change(n=>{n[type]=n[type].filter(v=>v!==old);n.manga.forEach(m=>m[type]=m[type].filter(v=>v!==old));});categoryFilter='All';tagFilter='All';closeDialog();render();toast('Removed');});}
+  else if(b.hasAttribute('data-export')){const blob=new Blob([JSON.stringify(data)],{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='inklog-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);toast('Backup downloaded');}
+}catch(err){fail(err);}});
 
-function openDetail(id){
-  const m=state.library.find(x=>x.id===id)||catalog.find(x=>x.id===id); if(!m)return;
-  const inLibrary=state.library.some(x=>x.id===id);
-  modal(`<div class="detail-hero"><div class="detail-bg" style="background-image:url('${cover(m.anilist)}')"></div><img class="detail-cover" src="${cover(m.anilist)}" alt="Cover of ${esc(m.title)}"/><div class="detail-copy"><div class="eyebrow">${m.format} · ${m.year}</div><h1>${esc(m.title)}</h1><div class="detail-meta"><span>${esc(m.author)}</span><span>${inLibrary?m.status:'Discover'}</span><span>${m.total?m.total+' chapters':'Ongoing'}</span></div><div class="detail-actions">${inLibrary?`<button class="button primary" data-modal-plus>${icon('plus')} Chapter ${m.chapter+1}</button><button class="button soft" data-modal-review>${icon('pen')} Review</button><button class="button ghost" data-modal-gallery>${icon('image')} Gallery</button>`:`<button class="button primary" data-modal-add>${icon('plus')} Add to library</button>`}</div></div></div>
-    <div class="detail-content"><div class="tabs"><button class="tab active">Overview</button><button class="tab" data-modal-review>My review</button><button class="tab" data-modal-gallery>Gallery</button></div><div class="detail-panel"><div><div class="progress-editor"><strong>Your progress</strong><div class="progress-controls"><select class="mini-select" data-detail-status ${!inLibrary?'disabled':''}>${['Plan to Read','Reading','Completed','On Hold','Dropped'].map(s=>`<option ${m.status===s?'selected':''}>${s}</option>`).join('')}</select><div class="stepper"><button data-step="-1">−</button><input data-chapter-input type="number" step="0.1" value="${m.chapter||0}" ${!inLibrary?'disabled':''}/><button data-step="1">+</button></div></div></div><h2>About this story</h2><p>${esc(m.description)}</p><div class="tag-list">${m.genres.map(g=>`<span class="tag">${esc(g)}</span>`).join('')}</div>${m.review?`<section class="section"><h2>Your note</h2><p>“${esc(m.review)}”</p></section>`:''}</div><aside class="info-list"><div class="info-row"><span>Creator</span><strong>${esc(m.author)}</strong></div><div class="info-row"><span>Format</span><strong>${m.format}</strong></div><div class="info-row"><span>Released</span><strong>${m.year}</strong></div><div class="info-row"><span>Your score</span><strong>${m.score?m.score+'/10':'Not rated'}</strong></div><div class="info-row"><span>Shelf</span><strong>${m.status}</strong></div></aside></div></div>`,true);
-  const plus=$('[data-modal-plus]');if(plus)plus.onclick=()=>{increment(id);openDetail(id);};
-  $$('[data-modal-review]').forEach(x=>x.onclick=()=>openReview(id));
-  $$('[data-modal-gallery]').forEach(x=>x.onclick=()=>openGallery(id));
-  const add=$('[data-modal-add]');if(add)add.onclick=()=>{addCatalog(id);closeModal();};
-  const status=$('[data-detail-status]');if(status)status.onchange=()=>{m.status=status.value;save();toast('Shelf updated');};
-  $$('[data-step]').forEach(x=>x.onclick=()=>{increment(id,Number(x.dataset.step));closeModal();openDetail(id);});
-  const input=$('[data-chapter-input]');if(input)input.onchange=()=>{m.chapter=Math.max(0,Number(input.value)||0);save();toast('Progress saved');};
-}
+root.addEventListener('input',e=>{if(e.target.id==='search'){query=e.target.value;document.getElementById('library-results').innerHTML=libraryResults();}});
+root.addEventListener('change',async e=>{const el=e.target;try{
+  if(el.id==='category-filter'){categoryFilter=el.value;document.getElementById('library-results').innerHTML=libraryResults();}
+  else if(el.id==='tag-filter'){tagFilter=el.value;document.getElementById('library-results').innerHTML=libraryResults();}
+  else if(el.id==='sort'){sort=el.value;document.getElementById('library-results').innerHTML=libraryResults();}
+  else if(['theme','text-size','layout'].includes(el.id)){const k={'theme':'theme','text-size':'text','layout':'layout'}[el.id];await change(n=>n.profile[k]=el.value);render();}
+  else if(el.id==='profile-photo'&&el.files[0]){const photo=await readImage(el.files[0],500);await change(n=>n.profile.photo=photo);render();toast('Profile photo saved');}
+  else if(el.id==='import'&&el.files[0]){const file=el.files[0];if(file.size>150*1024*1024)throw Error('That backup is too large.');const next=validateBackup(JSON.parse(await file.text()));confirmDialog('Restore backup?', 'This will replace this device’s library and profile. Export a backup first if you want to keep them.',async()=>{await persist(next);closeDialog();page='reading';render();toast('Backup restored');});}
+}catch(err){fail(err);el.value='';}});
+root.addEventListener('submit',async e=>{e.preventDefault();try{
+  if(e.target.id==='profile-form'){const name=String(new FormData(e.target).get('username')).trim();if(!name)throw Error('Enter a username.');await change(n=>n.profile.username=name);render();toast('Name saved');}
+  else if(e.target.dataset.manager){const type=e.target.dataset.manager;const name=String(new FormData(e.target).get('name')).trim();if(!name)return;if(data[type].some(v=>v.toLowerCase()===name.toLowerCase()))throw Error('That name already exists.');await change(n=>n[type].push(name));render();toast('Added');}
+}catch(err){fail(err);}});
 
-function openAdd(){
-  modal(`<div class="modal-head"><div><div class="eyebrow">A new world awaits</div><h2>Add to your journal</h2></div><button class="close" data-close>${icon('x')}</button></div><div class="modal-body"><div class="tabs"><button class="tab active" data-add-tab="search">Search catalog</button><button class="tab" data-add-tab="custom">Custom entry</button></div><div data-add-content><div class="field full" style="margin:18px 0"><label>Search manga, manhwa, or manhua</label><div class="search" style="width:100%;min-width:0">${icon('search')}<input data-add-search placeholder="Try a title or creator"/></div></div><div class="shelf-grid" data-add-results>${catalog.slice(0,6).map(m=>mangaCard(m,true)).join('')}</div></div></div>`,true);
-  bindAddModal();
-}
-function bindAddModal(){
-  $$('[data-add-tab]').forEach(el=>el.onclick=()=>{ $$('[data-add-tab]').forEach(x=>x.classList.toggle('active',x===el)); if(el.dataset.addTab==='custom')renderCustomForm();else openAdd(); });
-  const search=$('[data-add-search]');if(search)search.oninput=()=>{const q=search.value.toLowerCase();$('[data-add-results]').innerHTML=catalog.filter(m=>m.title.toLowerCase().includes(q)||m.author.toLowerCase().includes(q)).slice(0,6).map(m=>mangaCard(m,true)).join('');wireCatalogAdds();clearTimeout(search._timer);if(q.length>=3)search._timer=setTimeout(()=>searchAniList(q),450);};
-  $$('[data-quick-add]').forEach(el=>el.onclick=e=>{e.stopPropagation();addCatalog(el.dataset.quickAdd);closeModal();});
-}
-function wireCatalogAdds(){ $$('[data-quick-add]').forEach(el=>el.onclick=e=>{e.stopPropagation();addCatalog(el.dataset.quickAdd);closeModal();}); }
-async function searchAniList(search){
-  const results=$('[data-add-results]');if(!results)return;
-  try{
-    const query=`query ($search: String) { Page(page: 1, perPage: 6) { media(search: $search, type: MANGA, sort: SEARCH_MATCH) { id title { english romaji } format startDate { year } genres staff(perPage: 1, sort: RELEVANCE) { nodes { name { full } } } description(asHtml: false) } } }`;
-    const response=await fetch('https://graphql.anilist.co',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({query,variables:{search}})});
-    if(!response.ok)throw Error('catalog unavailable');
-    const data=await response.json();
-    const found=data.data.Page.media.map((x,i)=>({id:`live-${x.id}`,anilist:x.id,title:x.title.english||x.title.romaji,format:x.format==='MANGA'?'Manga':x.format==='ONE_SHOT'?'Manga':'Manhwa',year:x.startDate.year||'—',genres:x.genres.slice(0,3),author:x.staff.nodes[0]?.name.full||'Unknown creator',reason:'Live result from AniList',chapter:0,total:0,score:0,status:'Plan to Read',favorite:false,description:(x.description||'No description available.').replace(/<[^>]+>/g,''),review:'',added:new Date().toISOString().slice(0,10)}));
-    found.forEach(item=>{const old=catalog.findIndex(x=>x.anilist===item.anilist);if(old>=0)catalog[old]={...catalog[old],...item,id:catalog[old].id};else catalog.unshift(item);});
-    if($('[data-add-search]')?.value.toLowerCase()!==search)return;
-    results.innerHTML=found.map(m=>mangaCard(catalog.find(x=>x.anilist===m.anilist),true)).join('');wireCatalogAdds();
-  }catch{ if(results)results.insertAdjacentHTML('beforeend','<p class="subtext" style="grid-column:1/-1">Live catalog is unavailable. Showing your saved recommendations instead.</p>'); }
-}
-function renderCustomForm(){
-  $('[data-add-content]').innerHTML=`<form data-custom-form style="margin-top:20px"><div class="form-grid"><div class="field full"><label>Title *</label><input name="title" required placeholder="The story's title"/></div><div class="field"><label>Format</label><select name="format"><option>Manga</option><option>Manhwa</option><option>Manhua</option><option>Other</option></select></div><div class="field"><label>Reading status</label><select name="status"><option>Plan to Read</option><option>Reading</option><option>Completed</option><option>On Hold</option><option>Dropped</option></select></div><div class="field"><label>Creator</label><input name="author" placeholder="Author or artist"/></div><div class="field"><label>Cover URL</label><input name="coverId" placeholder="AniList media ID (optional)"/></div><div class="field full"><label>Description</label><textarea name="description" placeholder="What is this story about?"></textarea></div></div><div class="form-actions"><button type="button" class="button ghost" data-close>Cancel</button><button class="button primary">${icon('plus')} Add custom title</button></div></form>`;
-  $('[data-custom-form]').onsubmit=e=>{e.preventDefault();const f=new FormData(e.currentTarget);const title=f.get('title').trim();if(!title)return;state.library.unshift({id:`custom-${Date.now()}`,anilist:Number(f.get('coverId'))||30013,title,format:f.get('format'),year:new Date().getFullYear(),status:f.get('status'),chapter:0,total:0,score:0,favorite:false,genres:['Custom'],author:f.get('author')||'Unknown creator',description:f.get('description')||'A custom story in your journal.',review:'',added:new Date().toISOString().slice(0,10)});save();closeModal();toast(`${title} added to your journal`);render();};
-  $$('[data-close]').forEach(x=>x.onclick=closeModal);
-}
+modalRoot.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;try{
+  if(b.hasAttribute('data-close')){if(dialogContext?.type==='editor'&&!window.confirm('Close without saving your changes?'))return;closeDialog();}
+  else if(b.dataset.edit)editor(b.dataset.edit);
+  else if(b.dataset.plus)await plus(b.dataset.plus);
+  else if(b.dataset.detailTab)detail(dialogContext.id,b.dataset.detailTab);
+  else if(b.dataset.rate){draft.rating=Number(b.dataset.rate);updateStars();}
+  else if(b.hasAttribute('data-clear-rating')){draft.rating=0;updateStars();}
+  else if(b.hasAttribute('data-remove-cover')){draft.cover='';document.getElementById('cover-preview').innerHTML=icon('image');modalRoot.querySelector('[name=coverURL]').value='';}
+  else if(b.hasAttribute('data-draft-category')){const el=document.getElementById('new-category'),name=el.value.trim();if(!name)return;draft.categories=[...new Set([...modalRoot.querySelectorAll('[name=categories]:checked')].map(x=>x.value).concat(name))];document.getElementById('category-choices').innerHTML=categoryChoices();el.value='';}
+  else if(b.dataset.deleteManga){const id=b.dataset.deleteManga,m=mangaById(id);confirmDialog('Delete '+m.title+'?', 'This also removes its review and gallery from this device.',async()=>{await change(n=>n.manga=n.manga.filter(m=>m.id!==id));closeDialog();render();toast('Manga deleted');});}
+  else if(b.hasAttribute('data-confirm')){b.disabled=true;try{await dialogContext.onConfirm();}catch(err){b.disabled=false;throw err;}}
+  else if(b.dataset.viewImage){const m=mangaById(dialogContext.id),g=m.gallery.find(x=>x.id===b.dataset.viewImage);showDialog(g.caption||'Saved image',`${picture(g.url,g.caption,'image-viewer')}<div class="form-actions"><button class="btn" data-back-gallery="${m.id}">Back to gallery</button></div>`,{type:'image',id:m.id});}
+  else if(b.dataset.backGallery)detail(b.dataset.backGallery,'gallery');
+  else if(b.dataset.caption){const id=dialogContext.id,g=mangaById(id).gallery.find(x=>x.id===b.dataset.caption);textDialog('Image caption',g.caption,async text=>{await change(n=>n.manga.find(m=>m.id===id).gallery.find(x=>x.id===g.id).caption=text);detail(id,'gallery');toast('Caption saved');});}
+  else if(b.dataset.move){const id=dialogContext.id,[imageId,delta]=b.dataset.move.split(':');await change(n=>{const a=n.manga.find(m=>m.id===id).gallery,i=a.findIndex(g=>g.id===imageId),j=i+Number(delta);if(j>=0&&j<a.length)[a[i],a[j]]=[a[j],a[i]];});detail(id,'gallery');}
+  else if(b.dataset.removeImage){const id=dialogContext.id,imageId=b.dataset.removeImage;confirmDialog('Delete this image?','The rest of your gallery will stay.',async()=>{await change(n=>{const m=n.manga.find(m=>m.id===id);m.gallery=m.gallery.filter(g=>g.id!==imageId);});detail(id,'gallery');toast('Image removed');});}
+}catch(err){fail(err);}});
 
-function openReview(id){
-  const m=state.library.find(x=>x.id===id)||state.library[0];if(!m)return;
-  modal(`<div class="modal-head"><div><div class="eyebrow">Private journal entry</div><h2>Review ${esc(m.title)}</h2></div><button class="close" data-close>${icon('x')}</button></div><form class="modal-body" data-review-form><div class="field"><label>Your score</label><div class="rating-input">${[2,4,6,8,10].map(n=>`<button type="button" class="star-button ${m.score>=n?'active':''}" data-score="${n}">★</button>`).join('')}<span class="meta" style="align-self:center;margin-left:8px" data-score-label>${m.score?m.score+'/10':'Not rated'}</span></div></div><div class="field" style="margin-top:18px"><label>What stayed with you?</label><textarea name="review" placeholder="Characters, art, pacing, feelings…">${esc(m.review)}</textarea></div><div class="field" style="margin-top:14px"><label><input type="checkbox" name="spoiler"/> This note contains spoilers</label></div><div class="form-actions"><button type="button" class="button ghost" data-close>Cancel</button><button class="button primary">${icon('pen')} Save entry</button></div></form>`);
-  let score=m.score;$$('[data-score]').forEach(x=>x.onclick=()=>{score=Number(x.dataset.score);$$('[data-score]').forEach(s=>s.classList.toggle('active',Number(s.dataset.score)<=score));$('[data-score-label]').textContent=`${score}/10`;});
-  $('[data-review-form]').onsubmit=e=>{e.preventDefault();m.review=new FormData(e.currentTarget).get('review').trim();m.score=score;save();closeModal();toast('Journal entry saved');render();};
-}
+modalRoot.addEventListener('change',async e=>{const el=e.target;try{
+  if(el.id==='cover-upload'&&el.files[0]){draft.cover=await readImage(el.files[0],1000);document.getElementById('cover-preview').innerHTML=picture(draft.cover,'Cover preview');modalRoot.querySelector('[name=coverURL]').value='';}
+  else if(el.name==='coverURL'&&el.value.trim()){const url=imageURL(el.value.trim());if(!url)throw Error('Use an HTTPS image link.');document.getElementById('cover-preview').innerHTML=picture(url,'Cover preview');}
+  else if(el.dataset.detailStatus){await change(n=>{const m=n.manga.find(x=>x.id===el.dataset.detailStatus);m.status=el.value;m.updated=Date.now();});render();toast('Status updated');}
+  else if(el.dataset.detailChapter){const chapter=Number(el.value);if(!Number.isFinite(chapter)||chapter<0)throw Error('Enter a chapter number of 0 or more.');await change(n=>{const m=n.manga.find(x=>x.id===el.dataset.detailChapter);m.chapter=chapter;m.updated=Date.now();});render();toast('Chapter saved');}
+  else if(el.dataset.galleryUpload){const id=el.dataset.galleryUpload,items=[];for(const file of el.files)items.push({id:uid(),url:await readImage(file),caption:''});await change(n=>n.manga.find(m=>m.id===id).gallery.push(...items));detail(id,'gallery');toast('Images saved');}
+}catch(err){fail(err);}});
+modalRoot.addEventListener('submit',async e=>{e.preventDefault();const form=e.target,submit=form.querySelector('[type=submit]')||form.querySelector('button:last-child');if(submit)submit.disabled=true;try{
+  if(form.id==='manga-form')await saveManga(form);
+  else if(form.id==='text-form')await dialogContext.onSave(String(new FormData(form).get('text')).trim());
+  else if(form.dataset.galleryLink){const id=form.dataset.galleryLink,url=imageURL(String(new FormData(form).get('url')).trim());if(!url)throw Error('Use an HTTPS image link.');await change(n=>n.manga.find(m=>m.id===id).gallery.push({id:uid(),url,caption:''}));detail(id,'gallery');toast('Image link saved');}
+}catch(err){fail(err);}finally{if(submit?.isConnected)submit.disabled=false;}});
+document.addEventListener('keydown',e=>{if(!modalRoot.firstChild)return;if(e.key==='Escape'){if(dialogContext?.type==='editor'&&!window.confirm('Close without saving your changes?'))return;closeDialog();}if(e.key==='Tab'){const nodes=[...modalRoot.querySelectorAll('button:not(:disabled),input:not([type=hidden]),textarea,select,a[href]')].filter(n=>n.getClientRects().length&&getComputedStyle(n).opacity!=='0');const first=nodes[0],last=nodes.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}}});
+document.addEventListener('error',e=>{if(e.target.tagName==='IMG'){const img=e.target;img.style.display='none';if(img.parentElement.classList.contains('gallery-open'))img.parentElement.innerHTML='<span class="muted" style="display:block;padding:25px">Image unavailable</span>'; }},true);
 
-function openGallery(id){
-  const m=state.library.find(x=>x.id===id);if(!m)return;const items=state.galleries[id]||[];
-  modal(`<div class="modal-head"><div><div class="eyebrow">Private collection</div><h2>${esc(m.title)} gallery</h2></div><button class="close" data-close>${icon('x')}</button></div><div class="modal-body"><label class="upload-zone">${icon('upload')}<h3 style="margin:8px 0 3px">Add a panel or memory</h3><span>Choose a JPG, PNG, or WebP image</span><input type="file" accept="image/jpeg,image/png,image/webp" hidden data-gallery-file/></label><form data-link-form class="form-grid" style="margin-bottom:20px"><div class="field"><label>Or paste an image link</label><input name="url" type="url" placeholder="https://…"/></div><div class="field"><label>Caption</label><input name="caption" placeholder="Why you saved it"/></div><div class="field full"><button class="button soft">Add image link</button></div></form>${items.length?`<div class="gallery-grid">${items.map((g,i)=>`<figure class="gallery-item"><img src="${esc(g.url)}" alt="${esc(g.caption||'Gallery image')}"/><figcaption class="gallery-caption">${esc(g.caption||'Saved image')} <button class="text-button" data-delete-image="${i}">Remove</button></figcaption></figure>`).join('')}</div>`:`<div class="empty">${icon('image')}<h3>Your gallery is waiting</h3><p>Save panels, artwork, or reading memories here.</p></div>`}</div>`,true);
-  $('[data-gallery-file]').onchange=e=>{const file=e.target.files[0];if(!file)return;if(file.size>10*1024*1024){toast('Please choose an image under 10 MB');return;}const r=new FileReader();r.onload=()=>{state.galleries[id]=[...(state.galleries[id]||[]),{url:r.result,caption:file.name}];try{save();openGallery(id);toast('Image added to gallery');}catch{state.galleries[id].pop();toast('Browser storage is full—try an image link');}};r.readAsDataURL(file);};
-  $('[data-link-form]').onsubmit=e=>{e.preventDefault();const f=new FormData(e.currentTarget);if(!f.get('url'))return;state.galleries[id]=[...(state.galleries[id]||[]),{url:f.get('url'),caption:f.get('caption')}];save();openGallery(id);toast('Image link added');};
-  $$('[data-delete-image]').forEach(x=>x.onclick=()=>{state.galleries[id].splice(Number(x.dataset.deleteImage),1);save();openGallery(id);});
+function validateBackup(raw){
+  if(raw?.version!==3||!Array.isArray(raw.manga)||!Array.isArray(raw.categories)||!Array.isArray(raw.tags)||!raw.profile)throw Error('Choose an Inklog backup exported from this version.');
+  const next=fresh(),p=raw.profile;next.profile={username:String(p.username||'My shelf').slice(0,40),photo:imageURL(p.photo),theme:p.theme==='light'?'light':'dark',accent:['lavender','rose','sage'].includes(p.accent)?p.accent:'lavender',text:p.text==='large'?'large':'standard',layout:p.layout==='compact'?'compact':'comfortable'};
+  const words=a=>[...new Set(a.filter(s=>typeof s==='string').map(s=>s.trim()).filter(Boolean))];
+  next.categories=words(raw.categories);next.tags=words(raw.tags);
+  next.manga=raw.manga.map(m=>{if(!m||typeof m.title!=='string'||!m.title.trim()||!Array.isArray(m.gallery))throw Error('This backup contains an invalid manga entry.');return {id:uid(),title:m.title.slice(0,200),cover:imageURL(m.cover),status:statuses.includes(m.status)?m.status:'Plan to Read',chapter:Math.max(0,Number(m.chapter)||0),total:Math.max(0,Number(m.total)||0),rating:Math.min(5,Math.max(0,Math.round(Number(m.rating)||0))),review:String(m.review||'').slice(0,20000),categories:words(m.categories||[]),tags:words(m.tags||[]),gallery:m.gallery.map(g=>({id:uid(),url:imageURL(g.url),caption:String(g.caption||'')})).filter(g=>g.url),created:Number(m.created)||Date.now(),updated:Number(m.updated)||Date.now()};});
+  next.categories=words([...next.categories,...next.manga.flatMap(m=>m.categories)]);next.tags=words([...next.tags,...next.manga.flatMap(m=>m.tags)]);return next;
 }
-
-function openSettings(){
-  modal(`<div class="modal-head"><div><div class="eyebrow">Your space</div><h2>Journal settings</h2></div><button class="close" data-close>${icon('x')}</button></div><div class="modal-body"><div class="form-grid"><div class="field full"><label>Journal name</label><input value="My manga journal"/></div><div class="field full"><label>Collections</label><div class="tag-list">${state.collections.map(x=>`<span class="tag">${esc(x)}</span>`).join('')}</div></div><div class="field full"><label>Tags</label><div class="tag-list">${state.tags.map(x=>`<span class="tag"># ${esc(x)}</span>`).join('')}</div></div></div><section class="section"><h2>Backup and restore</h2><p class="subtext" style="margin:7px 0 16px">Export your library, progress, reviews, tags, and image-link metadata as JSON.</p><div class="hero-actions"><button class="button soft" data-export>${icon('download')} Export JSON</button><label class="button ghost">${icon('upload')} Import JSON<input type="file" accept="application/json" hidden data-import/></label></div></section><section class="section"><h2>About this version</h2><p class="subtext" style="margin-top:7px">Inklog saves your journal privately in this browser. The hosted app itself is owner-private.</p></section></div>`);
-  $('[data-export]').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`inklog-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);toast('Backup downloaded');};
-  $('[data-import]').onchange=e=>{const file=e.target.files[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const next=JSON.parse(r.result);if(!Array.isArray(next.library))throw Error();state={...structuredClone(defaultState),...next};save();closeModal();render();toast('Journal restored');}catch{toast('That backup file could not be read');}};r.readAsText(file);};
-}
-
-render();
+async function start(){root.innerHTML='<div class="loading">Opening your library…</div>';try{data=await openDB();if(!data){let old;try{old=JSON.parse(localStorage.getItem('inklog:v1'));}catch{}await persist(old?.library?migrate(old):fresh());}render();}catch(e){root.innerHTML='<div class="loading"><h1>Storage is unavailable</h1><p>Open Inklog in Safari or Chrome with browser storage enabled.</p></div>';console.error(e);}}
+start();
